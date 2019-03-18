@@ -216,4 +216,13 @@ class ContainerCirclesView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : ContainerCirclesView {
+            val view : ContainerCirclesView = ContainerCirclesView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
