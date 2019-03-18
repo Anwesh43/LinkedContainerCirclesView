@@ -193,4 +193,26 @@ class ContainerCirclesView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : ContainerCirclesView) {
+
+        private val animator : Animator = Animator(view)
+        private val cc : ContainerCircles = ContainerCircles(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            cc.draw(canvas, paint)
+            animator.animate {
+                cc.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            cc.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
