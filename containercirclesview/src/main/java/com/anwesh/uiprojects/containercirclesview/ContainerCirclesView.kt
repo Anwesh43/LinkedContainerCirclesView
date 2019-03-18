@@ -21,6 +21,7 @@ val sizeFactor : Float = 2.9f
 val strokeFactor : Int = 90
 val foreColor : Int = Color.parseColor("#4CAF50")
 val backColor : Int = Color.parseColor("#BDBDBD")
+val delay : Long = 20
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
@@ -42,6 +43,7 @@ fun Canvas.drawCCNode(i : Int, scale : Float, paint : Paint) {
     paint.strokeCap = Paint.Cap.ROUND
     save()
     translate(gap * (i + 1), h / 2)
+    save()
     rotate(90f * (1f - sc1))
     paint.style = Paint.Style.STROKE
     val path : Path = Path()
@@ -50,12 +52,13 @@ fun Canvas.drawCCNode(i : Int, scale : Float, paint : Paint) {
     path.lineTo(size, 0f)
     path.lineTo(size, -xGap)
     drawPath(path, paint)
+    restore()
     paint.style = Paint.Style.FILL
     for (j in 0..(balls - 1)) {
         val sc : Float = sc2.divideScale(j, balls)
         save()
-        translate(-size + xGap + xGap * i, (h / 2) * sc)
-        drawCircle(0f, 0f, xGap / 2, paint)
+        translate(-size + xGap + xGap * j, -(h / 2 + xGap / 2) * (1 - sc))
+        drawCircle(0f, -xGap / 2, xGap / 2, paint)
         restore()
     }
     restore()
@@ -105,7 +108,7 @@ class ContainerCirclesView(ctx : Context) : View(ctx) {
             if (animated) {
                 cb()
                 try {
-                    Thread.sleep(50)
+                    Thread.sleep(delay)
                     view.invalidate()
                 } catch(ex : Exception) {
 
@@ -178,7 +181,7 @@ class ContainerCirclesView(ctx : Context) : View(ctx) {
         private var dir : Int = 1
 
         fun draw(canvas : Canvas, paint : Paint) {
-            curr.draw(canvas, paint)
+            root.draw(canvas, paint)
         }
 
         fun update(cb : (Int, Float) -> Unit) {
