@@ -11,6 +11,7 @@ import android.app.Activity
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Color
+import android.graphics.Path
 
 val nodes : Int = 5
 val balls : Int = 3
@@ -27,3 +28,35 @@ fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale
 fun Float.scaleFactor() : Float = Math.floor(this / scDiv).toFloat()
 fun Float.mirrorValue(a : Int, b : Int) : Float = (1 - scaleFactor()) * a.inverse() + scaleFactor() * b.inverse()
 fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = mirrorValue(a, b) * dir * scGap
+
+fun Canvas.drawCCNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = w / (nodes + 1)
+    val size : Float = gap / sizeFactor
+    val sc1 : Float = scale.divideScale(0, 2)
+    val sc2 : Float = scale.divideScale(1, 2)
+    val xGap : Float = (2 * size) / (balls + 1)
+    paint.color = foreColor
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    paint.strokeCap = Paint.Cap.ROUND
+    save()
+    translate(gap * (i + 1), h / 2)
+    rotate(90f * (1f - sc1))
+    paint.style = Paint.Style.STROKE
+    val path : Path = Path()
+    path.moveTo(-size, -xGap)
+    path.lineTo(-size, 0f)
+    path.lineTo(size, 0f)
+    path.lineTo(size, -xGap)
+    drawPath(path, paint)
+    paint.style = Paint.Style.FILL
+    for (j in 0..(balls - 1)) {
+        val sc : Float = sc2.divideScale(j, balls)
+        save()
+        translate(-size + xGap + xGap * i, (h / 2) * sc)
+        drawCircle(0f, 0f, xGap / 2, paint)
+        restore()
+    }
+    restore()
+}
